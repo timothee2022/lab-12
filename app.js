@@ -50,31 +50,44 @@ function randonIndexGenerator() {
 }
 
 
-function renderImg() {
-  let imgOneIndex = randonIndexGenerator();
-  let imgTwoIndex = randonIndexGenerator();
-  let imgThreeIndex = randonIndexGenerator();
+let productIndexArr = [];
 
-  while (imgOneIndex === imgTwoIndex) {
-    imgTwoIndex = randonIndexGenerator;
-  }
-  while (imgOneIndex === imgThreeIndex) {
-    imgOneIndex = randonIndexGenerator;
-  }
-  while (imgTwoIndex === imgThreeIndex) {
-    imgThreeIndex = randonIndexGenerator;
-  }
+function renderImg() {
+
+while(productIndexArr.length < 6){
+    let randomNum = randonIndexGenerator();
+    if(!productIndexArr.includes(randomNum)){
+    productIndexArr.push(randomNum);
+    }
+}
+
+  let imgOneIndex = productIndexArr.shift();
+  let imgTwoIndex = productIndexArr.shift();
+  let imgThreeIndex = productIndexArr.shift();
+
+//   while (imgOneIndex === imgTwoIndex) {
+//     imgTwoIndex = randonIndexGenerator;
+//   }
+//   while (imgOneIndex === imgThreeIndex) {
+//     imgOneIndex = randonIndexGenerator;
+//   }
+//   while (imgTwoIndex === imgThreeIndex) {
+//     imgThreeIndex = randonIndexGenerator;
+//   }
 
   imgOne.src = allProducts[imgOneIndex].photo;
   imgOne.alt = allProducts[imgOneIndex].name;
+  imgOne.name = allProducts[imgOneIndex].name;
   allProducts[imgOneIndex].views++;
 
   imgTwo.src = allProducts[imgTwoIndex].photo;
-  imgTwo.alt = allProducts[imgTwoIndex].photo;
+  imgTwo.alt = allProducts[imgTwoIndex].name;
+  imgTwo.name = allProducts[imgTwoIndex].name;
   allProducts[imgTwoIndex].views++;
 
   imgThree.src = allProducts[imgThreeIndex].photo;
-  imgThree.alt = allProducts[imgThreeIndex].photo;
+  imgThree.alt = allProducts[imgThreeIndex].name;
+  imgThree.name = allProducts[imgThreeIndex].name;
   allProducts[imgThreeIndex].views++;
 }
 
@@ -101,13 +114,8 @@ function handleClick(event) {
 }
 
 function handleResult() {
-
-for(let i = 0; i < allProducts.length; i++){
-  productNames.push(allProducts[i].name);
-}
-
   if (totalVotes === 0) {
-    // renderChart();
+    renderChart();
     // console.log('totalVote is:', totalVotes);
 
     // for (let i = 0; i < allProducts.length; i++) {
@@ -117,56 +125,70 @@ for(let i = 0; i < allProducts.length; i++){
 
     //   resultsList.appendChild(liElem);
 
-    }
-    resultBtn.removeEventListener('click', handleResult);
   }
-  console.log('resultsList:', resultsList);
+  resultBtn.removeEventListener('click', handleResult);
 }
+//   console.log('resultsList:', resultsList);
+// }
 
-let canvasElem = document.getElementById('my-chart');
+let canvasElem = document.getElementById('myChart');
 
-function renderChart(){
+function renderChart() {
+  const ctx = document.getElementById('myChart').getContext('2d');
+  // Constructor (1arg - my canvas element, 2nd arg - big ol object)
 
-  let productNames = [];
+  // function renderChart() {
+  let productsNames = [];
+  let productsVotes = [];
+  let productsViews = [];
 
-  let myObj = 
+  for (let i = 0; i < allProducts.length; i++) {
+    productsNames.push(allProducts[i].name);
+    productsVotes.push(allProducts[i].votes);
+    productsViews.push(allProducts[i].views);
+  }
+
+  let myObj = {
 
     type: 'bar',
     data: {
-        labels: productNames,
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
+      labels: productsNames,
+      datasets: [{
+        label: '# of Views',
+        data: productsViews,
+        backgroundColor: [
+          'red',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+        ],
+        borderWidth: 1
+      },
+      {
+        label: '# of Votes',
+        data: productsVotes,
+        backgroundColor: [
+          'blue',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+        ],
+        borderWidth: 1
+      }]
     },
     options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
+      scales: {
+        y: {
+          beginAtZero: true
         }
+      }
     }
+  };
 
-    new Chart(canvasElem, myObj);
+
+
+  new Chart(ctx, myObj);
 }
-
 
 imgContainer.addEventListener('click', handleClick);
 
